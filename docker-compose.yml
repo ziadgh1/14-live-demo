@@ -1,0 +1,18 @@
+version: '3.4'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: live_demo
+    environment:
+      - APPLICATION_PORT=3310
+      - DATABASE_URL=postgres://ziadghalleb@host.docker.internal:5436/postgres
+      - DATABASE_SCHEMA=public
+      - DATABASE_SSL=false
+      - FOREST_AUTH_SECRET=602e9c7c4c93d9f65c5b9417fea733060c578d9313756bd32d9b24a347540f73290389cc9a396f791669a079c3492dc3
+      - FOREST_ENV_SECRET=298c27960ed9a32e5995725b8af9dd868631cc52293f5701b8c6c6e99514a9cc
+    ports:
+      - "3310:3310"
+    volumes:
+      - ./:/usr/src/app
