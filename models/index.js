@@ -7,34 +7,32 @@ if (!process.env.DATABASE_URL) {
   process.exit();
 }
 
-let databaseOptions = {
+const databaseOptions = {
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
   pool: { maxConnections: 10, minConnections: 1 },
-  dialectOptions: {}
+  dialectOptions: {},
 };
 
 if (process.env.DATABASE_SSL && JSON.parse(process.env.DATABASE_SSL.toLowerCase())) {
   databaseOptions.dialectOptions.ssl = true;
 }
 
-let sequelize = new Sequelize(process.env.DATABASE_URL, databaseOptions);
-let db = {};
+const sequelize = new Sequelize(process.env.DATABASE_URL, databaseOptions);
+const db = {};
 
 fs
   .readdirSync(__dirname)
-  .filter(function (file) {
-    return (file.indexOf('.') !== 0) && (file !== 'index.js');
-  })
-  .forEach(function (file) {
+  .filter((file) => (file.indexOf('.') !== 0) && (file !== 'index.js'))
+  .forEach((file) => {
     try {
-      var model = sequelize['import'](path.join(__dirname, file));
+      const model = sequelize.import(path.join(__dirname, file));
       db[model.name] = model;
     } catch (error) {
-      console.error('Model creation error: ' + error);
+      console.error(`Model creation error: ${error}`);
     }
   });
 
-Object.keys(db).forEach(function(modelName) {
+Object.keys(db).forEach((modelName) => {
   if ('associate' in db[modelName]) {
     db[modelName].associate(db);
   }
