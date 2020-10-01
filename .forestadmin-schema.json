@@ -1171,7 +1171,7 @@
     "liana": "forest-express-sequelize",
     "liana_version": "6.3.11",
     "engine": "nodejs",
-    "engine_version": "12.18.4",
+    "engine_version": "12.18.3",
     "framework": "other",
     "framework_version": null,
     "orm_version": "5.15.2"
