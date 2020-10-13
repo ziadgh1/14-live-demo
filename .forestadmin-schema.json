@@ -335,7 +335,16 @@
       "validations": []
     }],
     "segments": [],
-    "actions": []
+    "actions": [{
+      "name": "Reject company",
+      "type": "bulk",
+      "baseUrl": null,
+      "endpoint": "/forest/actions/reject-company",
+      "httpMethod": "POST",
+      "redirect": null,
+      "download": false,
+      "fields": []
+    }]
   }, {
     "name": "customers",
     "nameOld": "customers",
@@ -1171,7 +1180,7 @@
     "liana": "forest-express-sequelize",
     "liana_version": "6.3.13",
     "engine": "nodejs",
-    "engine_version": "12.18.4",
+    "engine_version": "14.5.0",
     "framework": "other",
     "framework_version": null,
     "orm_version": "5.15.2"

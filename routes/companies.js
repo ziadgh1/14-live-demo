@@ -1,5 +1,5 @@
 const express = require('express');
-const { PermissionMiddlewareCreator } = require('forest-express-sequelize');
+const { PermissionMiddlewareCreator, RecordsGetter } = require('forest-express-sequelize');
 const { companies } = require('../models');
 
 const router = express.Router();
@@ -56,5 +56,9 @@ router.delete('/companies', permissionMiddlewareCreator.delete(), (request, resp
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/default-routes#delete-a-list-of-records
   next();
 });
+
+router.post('/actions/reject-company', permissionMiddlewareCreator.smartAction(), (request, response, next) => new RecordsGetter(companies).getIdsFromRequest(request)
+  .then((companyIds) => companies.update({ status: 'rejected' }, { where: { id: companyIds } }))
+  .then(() => response.send({ success: 'Company is now live!' })));
 
 module.exports = router;
