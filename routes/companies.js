@@ -59,6 +59,6 @@ router.delete('/companies', permissionMiddlewareCreator.delete(), (request, resp
 
 router.post('/actions/reject-company', permissionMiddlewareCreator.smartAction(), (request, response, next) => new RecordsGetter(companies).getIdsFromRequest(request)
   .then((companyIds) => companies.update({ status: 'rejected' }, { where: { id: companyIds } }))
-  .then(() => response.send({ success: 'Company is now live!' })));
+  .then(() => response.send({ success: 'Company IS REJECTED!' })));
 
 module.exports = router;
