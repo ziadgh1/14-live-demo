@@ -335,7 +335,16 @@
       "validations": []
     }],
     "segments": [],
-    "actions": []
+    "actions": [{
+      "name": "Reject company",
+      "type": "bulk",
+      "baseUrl": null,
+      "endpoint": "/forest/actions/reject-company",
+      "httpMethod": "POST",
+      "redirect": null,
+      "download": false,
+      "fields": []
+    }]
   }, {
     "name": "customers",
     "nameOld": "customers",
