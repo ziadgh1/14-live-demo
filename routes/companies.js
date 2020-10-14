@@ -1,9 +1,11 @@
 const express = require('express');
 const { PermissionMiddlewareCreator, RecordsGetter } = require('forest-express-sequelize');
+const { IncomingWebhook } = require('@slack/webhook');
 const { companies } = require('../models');
 
 const router = express.Router();
 const permissionMiddlewareCreator = new PermissionMiddlewareCreator('companies');
+const url = process.env.SLACK_WEBHOOK_URL;
 
 // This file contains the logic of every route in Forest Admin for the collection companies:
 // - Native routes are already generated but can be extended/overriden - Learn how to extend a route here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/extend-a-route
@@ -57,8 +59,60 @@ router.delete('/companies', permissionMiddlewareCreator.delete(), (request, resp
   next();
 });
 
-router.post('/actions/reject-company', permissionMiddlewareCreator.smartAction(), (request, response, next) => new RecordsGetter(companies).getIdsFromRequest(request)
-  .then((companyIds) => companies.update({ status: 'rejected' }, { where: { id: companyIds } }))
-  .then(() => response.send({ success: 'Company IS REJECTED!' })));
+const webhook = new IncomingWebhook(url);
+
+router.post('/actions/reject-company', permissionMiddlewareCreator.smartAction(), async (request, response) => {
+  const [selectedCompanyId] = await new RecordsGetter(companies).getIdsFromRequest(request);
+  const selectedCompany = await companies.findByPk(selectedCompanyId);
+  await companies.update({ status: 'rejected' }, { where: { id: selectedCompanyId } })
+    .then(() => response.send({ success: 'Company\'s request to go live rejected!' }))
+    .then(() => webhook.send({
+      text: 'An action has been triggered from Forest Admin',
+      channel: 'C01D9A8K97S',
+      blocks: [
+        {
+          type: 'header',
+          text: {
+            type: 'plain_text',
+            text: 'Action triggered - Company application rejected :x:',
+            emoji: true,
+          },
+        },
+        {
+          type: 'divider',
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `Hey :wave: ${request.user.firstName} ${request.user.lastName} just rejected <https://future.forestadmin.com/Live-demo/Staging/Operations/data/companies/index/record/companies/${selectedCompanyId}/details|${selectedCompany.name}>'s request to go live!`,
+          },
+          accessory: {
+            type: 'image',
+            image_url: 'https://download.logo.wine/logo/Tesla%2C_Inc./Tesla%2C_Inc.-Logo.wine.png',
+            alt_text: 'company logo',
+          },
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: 'For more details about this company',
+          },
+          accessory: {
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              text: 'View Notes',
+              emoji: true,
+            },
+            value: 'click_me_123',
+            url: `https://future.forestadmin.com/Live-demo/Staging/Operations/data/companies/index/record/companies/${selectedCompanyId}/collaboration`,
+            action_id: 'button-action',
+          },
+        },
+      ],
+    }));
+});
 
 module.exports = router;

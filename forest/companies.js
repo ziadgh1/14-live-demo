@@ -8,7 +8,7 @@ const { collection } = require('forest-express-sequelize');
 collection('companies', {
   actions: [{
     name: 'Reject company',
-    type: 'bulk',
+    type: 'single',
   }],
   fields: [],
   segments: [],

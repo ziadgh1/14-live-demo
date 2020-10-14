@@ -337,7 +337,7 @@
     "segments": [],
     "actions": [{
       "name": "Reject company",
-      "type": "bulk",
+      "type": "single",
       "baseUrl": null,
       "endpoint": "/forest/actions/reject-company",
       "httpMethod": "POST",
