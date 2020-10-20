@@ -7,8 +7,28 @@ const { collection } = require('forest-express-sequelize');
 // - Smart segments: https://docs.forestadmin.com/documentation/reference-guide/segments/smart-segments
 collection('companies', {
   actions: [{
-    name: 'Reject company',
+    name: 'Reject application',
     type: 'single',
+    fields: [
+      {
+        field: 'Reason(s) for rejection',
+        description: 'Please provide a reason for this decision',
+        required: true,
+        type: ['Enum'],
+        enums: ['Certificate of Incorporation', 'Proof of Address ID', 'Bank Statement ID'],
+      },
+      {
+        field: 'Comment',
+        description: 'This comment will only be displayed in your slack workspace message',
+        required: true,
+        type: 'String',
+        widget: 'text area',
+      },
+    ],
+  },
+  {
+    name: 'Cancel rejection',
+    type: 'bulk',
   }],
   fields: [],
   segments: [],

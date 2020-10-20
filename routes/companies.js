@@ -59,16 +59,29 @@ router.delete('/companies', permissionMiddlewareCreator.delete(), (request, resp
   next();
 });
 
+/* function capitalize(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+} */
+
 const webhook = new IncomingWebhook(url);
 
-router.post('/actions/reject-company', permissionMiddlewareCreator.smartAction(), async (request, response) => {
+router.post('/actions/reject-application', permissionMiddlewareCreator.smartAction(), async (request, response) => {
+  // Get input form attributes
+  const attributes = await request.body.data.attributes.values;
+  const rejectionReason = attributes['Reason(s) for rejection'];
+  const comment = attributes['Comment'];
+
+  // Get selected company
   const [selectedCompanyId] = await new RecordsGetter(companies).getIdsFromRequest(request);
   const selectedCompany = await companies.findByPk(selectedCompanyId);
+
+  // Change company status to rejected
   await companies.update({ status: 'rejected' }, { where: { id: selectedCompanyId } })
     .then(() => response.send({ success: 'Company\'s request to go live rejected!' }))
+    // Slack webhook
     .then(() => webhook.send({
       text: 'An action has been triggered from Forest Admin',
-      channel: 'C01D9A8K97S',
+      channel: 'C01CFGCADGF', // Slack channel ID
       blocks: [
         {
           type: 'header',
@@ -85,11 +98,11 @@ router.post('/actions/reject-company', permissionMiddlewareCreator.smartAction()
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `Hey :wave: ${request.user.firstName} ${request.user.lastName} just rejected <https://future.forestadmin.com/Live-demo/Staging/Operations/data/companies/index/record/companies/${selectedCompanyId}/details|${selectedCompany.name}>'s request to go live!`,
+            text: `${request.user.firstName} ${request.user.lastName} just rejected <https://app.forestadmin.com/Live-demo/Production/Operations/data/companies/index/record/companies/${selectedCompanyId}/details|${selectedCompany.name}>'s request to go live!\n\n • *Reason for rejection:* ${rejectionReason[0]}\n • *Comment:* ${comment}`,
           },
           accessory: {
             type: 'image',
-            image_url: 'https://download.logo.wine/logo/Tesla%2C_Inc./Tesla%2C_Inc.-Logo.wine.png',
+            image_url: 'https://pbs.twimg.com/profile_images/1122733397271613440/gE7ZUfPA.jpg',
             alt_text: 'company logo',
           },
         },
@@ -97,7 +110,7 @@ router.post('/actions/reject-company', permissionMiddlewareCreator.smartAction()
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: 'For more details about this company',
+            text: 'For more details',
           },
           accessory: {
             type: 'button',
@@ -106,13 +119,21 @@ router.post('/actions/reject-company', permissionMiddlewareCreator.smartAction()
               text: 'View Notes',
               emoji: true,
             },
-            value: 'click_me_123',
-            url: `https://future.forestadmin.com/Live-demo/Staging/Operations/data/companies/index/record/companies/${selectedCompanyId}/collaboration`,
+            value: 'null',
+            url: `https://app.forestadmin.com/Live-demo/Production/Operations/data/companies/index/record/companies/${selectedCompanyId}/collaboration`,
             action_id: 'button-action',
           },
         },
       ],
     }));
+});
+
+// Cancel rejection
+router.post('/actions/cancel-rejection', permissionMiddlewareCreator.smartAction(), async (request, response) => {
+  const selectedCompanyIds = await new RecordsGetter(companies).getIdsFromRequest(request);
+  // Change company status to rejected
+  await companies.update({ status: 'pending' }, { where: { id: selectedCompanyIds } })
+    .then(() => response.send({ success: 'Company\'s pending status reset' }));
 });
 
 module.exports = router;
