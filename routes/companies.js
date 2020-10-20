@@ -98,7 +98,7 @@ router.post('/actions/reject-application', permissionMiddlewareCreator.smartActi
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `${request.user.firstName} ${request.user.lastName} just rejected <https://app.forestadmin.com/Live-demo/Production/Operations/data/companies/index/record/companies/${selectedCompanyId}/details|${selectedCompany.name}>'s request to go live!\n\n • *Reason for rejection:* ${rejectionReason[0]}\n • *Comment:* ${comment}`,
+            text: `${request.user.firstName} ${request.user.lastName} just rejected <https://app.forestadmin.com/Live-demo/Production/Operations/data/companies/index/record/companies/${selectedCompanyId}/summary|${selectedCompany.name}>'s request to go live!\n\n • *Reason for rejection:* ${rejectionReason[0]}\n • *Comment:* ${comment}`,
           },
           accessory: {
             type: 'image',
