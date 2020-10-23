@@ -1,4 +1,7 @@
 const { collection } = require('forest-express-sequelize');
+const models = require('../models');
+
+const { Op } = models.Sequelize;
 
 // This file allows you to add to your Forest UI:
 // - Smart actions: https://docs.forestadmin.com/documentation/reference-guide/actions/create-and-manage-smart-actions
@@ -8,5 +11,19 @@ const { collection } = require('forest-express-sequelize');
 collection('products', {
   actions: [],
   fields: [],
-  segments: [],
+  segments: [{
+    name: 'Bestsellers',
+    where: () => models.sequelize.query(`
+        SELECT products.id, COUNT(orders.*)
+        FROM products
+        JOIN orders ON orders.product_id = products.id
+        GROUP BY products.id
+        ORDER BY count DESC
+        LIMIT 5;
+      `, { type: models.sequelize.QueryTypes.SELECT })
+      .then((products) => {
+        const productIds = products.map((product) => product.id);
+        return { id: { [Op.in]: productIds } };
+      }),
+  }],
 });

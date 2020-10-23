@@ -980,7 +980,9 @@
       "inverseOf": null,
       "validations": []
     }],
-    "segments": [],
+    "segments": [{
+      "name": "Bestsellers"
+    }],
     "actions": []
   }, {
     "name": "transactions",
