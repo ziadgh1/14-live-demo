@@ -30,6 +30,7 @@ router.delete('/products/:recordId', permissionMiddlewareCreator.delete(), (requ
 // Get a list of Products
 router.get('/products', permissionMiddlewareCreator.list(), (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/default-routes#get-a-list-of-records
+  console.log(request);
   next();
 });
 
