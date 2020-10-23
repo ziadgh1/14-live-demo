@@ -13,9 +13,9 @@ collection('companies', {
       {
         field: 'Reason(s) for rejection',
         description: 'Please provide a reason for this decision',
-        required: true,
         type: ['Enum'],
         enums: ['Certificate of Incorporation', 'Proof of Address ID', 'Bank Statement ID'],
+        required: true,
       },
       {
         field: 'Comment',

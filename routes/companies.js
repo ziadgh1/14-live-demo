@@ -77,55 +77,56 @@ router.post('/actions/reject-application', permissionMiddlewareCreator.smartActi
 
   // Change company status to rejected
   await companies.update({ status: 'rejected' }, { where: { id: selectedCompanyId } })
-    .then(() => response.send({ success: 'Company\'s request to go live rejected!' }))
-    // Slack webhook
-    .then(() => webhook.send({
-      text: 'An action has been triggered from Forest Admin',
-      channel: 'C01CFGCADGF', // Slack channel ID
-      blocks: [
-        {
-          type: 'header',
+  response.send({ success: 'Company\'s request to go live rejected!' });
+
+  // Initialize Slack webhook
+  await webhook.send({
+    text: 'An action has been triggered from Forest Admin',
+    channel: 'C01CFGCADGF', // Slack channel ID
+    blocks: [
+      {
+        type: 'header',
+        text: {
+          type: 'plain_text',
+          text: 'Action triggered - Company application rejected :x:',
+          emoji: true,
+        },
+      },
+      {
+        type: 'divider',
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `${request.user.firstName} ${request.user.lastName} just rejected <https://app.forestadmin.com/Live-demo/Production/Operations/data/companies/index/record/companies/${selectedCompanyId}/summary|${selectedCompany.name}>'s request to go live!\n\n • *Reason for rejection:* ${rejectionReason[0]}\n • *Comment:* ${comment}`,
+        },
+        accessory: {
+          type: 'image',
+          image_url: 'https://pbs.twimg.com/profile_images/1122733397271613440/gE7ZUfPA.jpg',
+          alt_text: 'company logo',
+        },
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: 'For more details on the company',
+        },
+        accessory: {
+          type: 'button',
           text: {
             type: 'plain_text',
-            text: 'Action triggered - Company application rejected :x:',
+            text: 'View Notes',
             emoji: true,
           },
+          value: 'null',
+          url: `https://app.forestadmin.com/Live-demo/Production/Operations/data/companies/index/record/companies/${selectedCompanyId}/collaboration`,
+          action_id: 'button-action',
         },
-        {
-          type: 'divider',
-        },
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `${request.user.firstName} ${request.user.lastName} just rejected <https://app.forestadmin.com/Live-demo/Production/Operations/data/companies/index/record/companies/${selectedCompanyId}/summary|${selectedCompany.name}>'s request to go live!\n\n • *Reason for rejection:* ${rejectionReason[0]}\n • *Comment:* ${comment}`,
-          },
-          accessory: {
-            type: 'image',
-            image_url: 'https://pbs.twimg.com/profile_images/1122733397271613440/gE7ZUfPA.jpg',
-            alt_text: 'company logo',
-          },
-        },
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: 'For more details',
-          },
-          accessory: {
-            type: 'button',
-            text: {
-              type: 'plain_text',
-              text: 'View Notes',
-              emoji: true,
-            },
-            value: 'null',
-            url: `https://app.forestadmin.com/Live-demo/Production/Operations/data/companies/index/record/companies/${selectedCompanyId}/collaboration`,
-            action_id: 'button-action',
-          },
-        },
-      ],
-    }));
+      },
+    ],
+  });
 });
 
 // Cancel rejection
