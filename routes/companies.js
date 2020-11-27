@@ -2,6 +2,7 @@ const express = require('express');
 const { PermissionMiddlewareCreator, RecordsGetter } = require('forest-express-sequelize');
 const { IncomingWebhook } = require('@slack/webhook');
 const { companies } = require('../models');
+const isAllowed = require('../services/scopes-checker');
 
 const router = express.Router();
 const permissionMiddlewareCreator = new PermissionMiddlewareCreator('companies');
@@ -42,9 +43,16 @@ router.get('/companies/count', permissionMiddlewareCreator.list(), (request, res
 });
 
 // Get a Company
-router.get('/companies/:recordId', permissionMiddlewareCreator.details(), (request, response, next) => {
+router.get('/companies/:recordId', permissionMiddlewareCreator.details(), async (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/default-routes#get-a-record
   next();
+  // try {
+  //   await isAllowed(request, response);
+  // } catch (error) {
+  //   console.error(error);
+  // } finally {
+  //   next();
+  // }
 });
 
 // Export a list of Companies
@@ -76,7 +84,7 @@ router.post('/actions/reject-application', permissionMiddlewareCreator.smartActi
   const selectedCompany = await companies.findByPk(selectedCompanyId);
 
   // Change company status to rejected
-  await companies.update({ status: 'rejected' }, { where: { id: selectedCompanyId } })
+  await companies.update({ status: 'rejected' }, { where: { id: selectedCompanyId } });
   response.send({ success: 'Company\'s request to go live rejected!' });
 
   // Initialize Slack webhook

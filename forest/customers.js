@@ -6,7 +6,15 @@ const { collection } = require('forest-express-sequelize');
 // - Smart relationships: https://docs.forestadmin.com/documentation/reference-guide/relationships/create-a-smart-relationship
 // - Smart segments: https://docs.forestadmin.com/documentation/reference-guide/segments/smart-segments
 collection('customers', {
-  actions: [],
-  fields: [],
+  actions: [
+    {
+      name: 'Permissions Retriever',
+      type: 'global',
+    },
+  ],
+  fields: [{
+    field: 'Fullname',
+    get: (customer) => `${customer.firstname} ${customer.lastname}`,
+  }],
   segments: [],
 });

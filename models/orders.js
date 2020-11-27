@@ -11,7 +11,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: Sequelize.literal('nextval(orders_id_seq::regclass)'),
     },
     shippingStatus: {
-      type: DataTypes.STRING,
+      // type: DataTypes.STRING,
+      type: DataTypes.ENUM(['In transit', 'Being processed', 'Shipped']),
+
     },
     createdAt: {
       type: DataTypes.DATE,

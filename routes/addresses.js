@@ -12,7 +12,7 @@ const permissionMiddlewareCreator = new PermissionMiddlewareCreator('addresses')
 // Create a Address
 router.post('/addresses', permissionMiddlewareCreator.create(), (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/default-routes#create-a-record
-  next();
+  // next();
 });
 
 // Update a Address

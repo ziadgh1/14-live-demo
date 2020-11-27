@@ -1,6 +1,8 @@
 const express = require('express');
 const { PermissionMiddlewareCreator } = require('forest-express-sequelize');
+const forestServerRequester = require('../node_modules/forest-express/dist/services/forest-server-requester');
 const { customers } = require('../models');
+const isAllowed = require('../services/scopes-checker');
 
 const router = express.Router();
 const permissionMiddlewareCreator = new PermissionMiddlewareCreator('customers');
@@ -28,13 +30,13 @@ router.delete('/customers/:recordId', permissionMiddlewareCreator.delete(), (req
 });
 
 // Get a list of Customers
-router.get('/customers', permissionMiddlewareCreator.list(), (request, response, next) => {
+router.get('/customers', (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/default-routes#get-a-list-of-records
   next();
 });
 
 // Get a number of Customers
-router.get('/customers/count', permissionMiddlewareCreator.list(), (request, response, next) => {
+router.get('/customers/count', (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/default-routes#get-a-number-of-records
   next();
 });
@@ -55,6 +57,21 @@ router.get('/customers.csv', permissionMiddlewareCreator.export(), (request, res
 router.delete('/customers', permissionMiddlewareCreator.delete(), (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/default-routes#delete-a-list-of-records
   next();
+});
+
+router.post('/actions/permissions-retriever', permissionMiddlewareCreator.smartAction(), (request, response) => {
+  const permissionsPerRendering = {};
+
+  async function getPermissions(environmentSecret, renderingId) {
+    const responseBody = await forestServerRequester.perform('/liana/v2/permissions', environmentSecret, { renderingId });
+    permissionsPerRendering[renderingId] = {
+      data: responseBody,
+    };
+    // console.log(permissionsPerRendering);
+    return permissionsPerRendering;
+  }
+
+  getPermissions(`${process.env.FOREST_ENV_SECRET_PRODUCTION}`, `${process.env.RENDERING_PRODUCTION_OPERATIONS}`);
 });
 
 module.exports = router;
