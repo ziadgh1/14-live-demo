@@ -4,14 +4,44 @@ module.exports = (sequelize, DataTypes) => {
   const { Sequelize } = sequelize;
   // This section contains the fields of your model, mapped to your table's columns.
   // Learn more here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/models/enrich-your-models#declaring-a-new-field-in-a-model
-  const Customers = sequelize.define('customers', {
-    firstname: {
+  const Passports = sequelize.define('passports', {
+    // id: {
+    //   type: DataTypes.STRING,
+    //   primaryKey: 'true',
+    //   autoIncrement: true,
+    //   // defaultValue: Sequelize.literal('nextval(passports_id_seq::regclass)'),
+    // },
+    countryCode: {
       type: DataTypes.STRING,
     },
-    lastname: {
+    identityNumber: {
       type: DataTypes.STRING,
     },
-    email: {
+    givenNames: {
+      type: DataTypes.STRING,
+    },
+    surname: {
+      type: DataTypes.STRING,
+    },
+    dateOfBirth: {
+      type: DataTypes.DATEONLY,
+    },
+    placeOfBirth: {
+      type: DataTypes.STRING,
+    },
+    gender: {
+      type: DataTypes.STRING,
+    },
+    issuanceDate: {
+      type: DataTypes.DATE,
+    },
+    expiryDate: {
+      type: DataTypes.DATE,
+    },
+    mrzOne: {
+      type: DataTypes.STRING,
+    },
+    mrzTwo: {
       type: DataTypes.STRING,
     },
     createdAt: {
@@ -20,39 +50,22 @@ module.exports = (sequelize, DataTypes) => {
     updatedAt: {
       type: DataTypes.DATE,
     },
-    stripeId: {
-      type: DataTypes.STRING,
-    },
   }, {
-    tableName: 'customers',
+    tableName: 'passports',
     underscored: true,
     schema: process.env.DATABASE_SCHEMA,
   });
 
   // This section contains the relationships for this model. See: https://docs.forestadmin.com/documentation/v/v6/reference-guide/relationships#adding-relationships.
-  Customers.associate = (models) => {
-    Customers.hasMany(models.orders, {
-      foreignKey: {
-        name: 'customerIdKey',
-        field: 'customer_id',
-      },
-      as: 'orders',
-    });
-    Customers.hasMany(models.addresses, {
-      foreignKey: {
-        name: 'customerIdKey',
-        field: 'customer_id',
-      },
-      as: 'addresses',
-    });
-    Customers.belongsTo(models.passports, {
+  Passports.associate = (models) => {
+    Passports.hasOne(models.customers, {
       foreignKey: {
         name: 'passportIdKey',
         field: 'passport_id',
       },
-      as: 'passport',
+      as: 'customer',
     });
   };
 
-  return Customers;
+  return Passports;
 };

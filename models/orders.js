@@ -12,8 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     shippingStatus: {
       // type: DataTypes.STRING,
-      type: DataTypes.ENUM(['In transit', 'Being processed', 'Shipped']),
-
+      type: DataTypes.ENUM(['Ready for shipping', 'Being processed', 'In transit', 'Shipped']),
     },
     createdAt: {
       type: DataTypes.DATE,

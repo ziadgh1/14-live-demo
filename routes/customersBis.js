@@ -1,6 +1,6 @@
 const express = require('express');
-const { PermissionMiddlewareCreator, RecordsGetter } = require('forest-express-sequelize');
-const { customers, passports } = require('../models');
+const { PermissionMiddlewareCreator } = require('forest-express-sequelize');
+// const forestServerRequester = require('../node_modules/forest-express/dist/services/forest-server-requester');
 
 const router = express.Router();
 const permissionMiddlewareCreator = new PermissionMiddlewareCreator('customers');
@@ -9,74 +9,67 @@ const permissionMiddlewareCreator = new PermissionMiddlewareCreator('customers')
 // - Native routes are already generated but can be extended/overriden - Learn how to extend a route here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/extend-a-route
 // - Smart action routes will need to be added as you create new Smart Actions - Learn how to create a Smart Action here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/actions/create-and-manage-smart-actions
 
-// Create a Address
+// Create a Customer
 router.post('/customers', permissionMiddlewareCreator.create(), (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/default-routes#create-a-record
   next();
 });
 
-// Update a Address
+// Update a Customer
 router.put('/customers/:recordId', permissionMiddlewareCreator.update(), (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/default-routes#update-a-record
   next();
 });
 
-// Delete a Address
+// Delete a Customer
 router.delete('/customers/:recordId', permissionMiddlewareCreator.delete(), (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/default-routes#delete-a-record
   next();
 });
 
-// Get a list of customers
+// Get a list of Customers
 router.get('/customers', permissionMiddlewareCreator.list(), (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/default-routes#get-a-list-of-records
   next();
 });
 
-// Get a number of customers
+// Get a number of Customers
 router.get('/customers/count', permissionMiddlewareCreator.list(), (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/default-routes#get-a-number-of-records
   next();
 });
 
-// Get a Address
+// Get a Customer
 router.get('/customers/:recordId', permissionMiddlewareCreator.details(), (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/default-routes#get-a-record
   next();
 });
 
-// Export a list of customers
+// Export a list of Customers
 router.get('/customers.csv', permissionMiddlewareCreator.export(), (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/default-routes#export-a-list-of-records
   next();
 });
 
-// Delete a list of customers
+// Delete a list of Customers
 router.delete('/customers', permissionMiddlewareCreator.delete(), (request, response, next) => {
   // Learn what this route does here: https://docs.forestadmin.com/documentation/v/v6/reference-guide/routes/default-routes#delete-a-list-of-records
   next();
 });
 
-router.post('/actions/extract-and-save-passport-info', permissionMiddlewareCreator.delete(), async (request, response) => {
-  const passportAttributes = request.body.data.attributes.values;
-  const customerId = await new RecordsGetter(customers).getIdsFromRequest(request);
-  // console.log(passportAttributes);
-  try {
-    const newPassportRegistered = await passports.create(passportAttributes);
-    // eslint-disable-next-line max-len
-    const updatedCustomerProfile = await customers.update({ passportIdKey: newPassportRegistered.id }, { where: { id: customerId } });
-    response.status(200).send({
-      success: 'Passport info succesfully extracted',
-      redirectTo: `/Live-demo/Development/Operations/data/customers/index/record/passports/${newPassportRegistered.id}/summary`,
-    });
-  } catch (error) {
-    response.status(400).send({ error: `${error}` });
-  }
-});
+// router.post('/actions/permissions-retriever', permissionMiddlewareCreator.smartAction(), (request, response) => {
+//   const permissionsPerRendering = {};
 
-router.post('/actions/update-order-status', permissionMiddlewareCreator.delete(), async (request, response) => {
-  const { attributes } = request.body.data;
-  console.log(attributes);
-});
+//   async function getPermissions(environmentSecret, renderingId) {
+//     const responseBody = await forestServerRequester.perform('/liana/v2/permissions', environmentSecret, { renderingId });
+//     permissionsPerRendering[renderingId] = {
+//       data: responseBody,
+//     };
+//     // console.log(permissionsPerRendering);
+//     return permissionsPerRendering;
+//   }
+
+//   getPermissions(`${process.env.FOREST_ENV_SECRET_PRODUCTION}`, `${process.env.RENDERING_PRODUCTION_OPERATIONS}`);
+// });
 
 module.exports = router;
