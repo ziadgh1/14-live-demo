@@ -11,7 +11,7 @@ async function parsePassport() {
     method: 'POST',
     url: 'https://api.mindee.net/products/passport/v1/predict',
     headers: {
-      'X-Inferuser-Token': 'c6b6ae6b422e753b49630dc46fca9f74',
+      'X-Inferuser-Token': process.env.MINDEE_SECRET_KEY,
       ...data.getHeaders(),
     },
     data,
