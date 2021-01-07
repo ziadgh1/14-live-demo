@@ -1,8 +1,11 @@
 const express = require('express');
 const { PermissionMiddlewareCreator, RecordsGetter } = require('forest-express-sequelize');
 const { IncomingWebhook } = require('@slack/webhook');
+const fs = require('fs');
+const axios = require('axios');
 const { companies } = require('../models');
 const isAllowed = require('../services/scopes-checker');
+const getVideoURL = require('../forest/companies');
 
 const router = express.Router();
 const permissionMiddlewareCreator = new PermissionMiddlewareCreator('companies');
@@ -141,8 +144,166 @@ router.post('/actions/reject-application', permissionMiddlewareCreator.smartActi
 router.post('/actions/cancel-rejection', permissionMiddlewareCreator.smartAction(), async (request, response) => {
   const selectedCompanyIds = await new RecordsGetter(companies).getIdsFromRequest(request);
   // Change company status to rejected
-  await companies.update({ status: 'pending' }, { where: { id: selectedCompanyIds } })
-    .then(() => response.send({ success: 'Company\'s pending status reset' }));
+  await companies.update({ status: 'pending' }, { where: { id: selectedCompanyIds } });
+  response.send({ success: 'Company\'s pending status reset' });
+/*   response.send({
+    html: `
+    <style>
+    .container {
+      width:600px;
+      height:450px;
+      overflow-x: scroll;
+    }
+    .demo {
+      width:1000px;
+      height:420px;
+      border:1px solid #54BD7E;
+      border-collapse:collapse;
+      padding:5px;
+    }
+    .demo th {
+      border:1px solid #54BD7E;
+      padding:5px;
+      background:#0f222a;
+      color: #FAFBFB;
+    }
+    .demo td {
+      border:1px solid #54BD7E;
+      padding:5px;
+      color: #FAFBFB;
+    }
+    a {
+      color: #FAFBFB;
+      text-decoration: underline;
+    }
+  </style>
+  <div class="container">
+    <table class="demo">
+      <thead>
+      <tr>
+        <th>Header 1</th>
+        <th>Header 2</th>
+        <th>Header 3</th>
+        <th>Header 4</th>
+        <th>Header 5</th>
+        <th>Header 6</th>
+        <th>Header 7</th>
+        <th>Header 8</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+      </tr>
+      <tr>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+      </tr>
+      <tr>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+      </tr>
+      <tr>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+      </tr>
+      <tr>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+      </tr>
+      <tr>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+      </tr>
+      <tr>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+        <td><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/overflow" target="_blank">CSS Overflow</a></td>
+      </tr>
+      <tbody>
+    </table>
+  </div>`,
+  }); */
+});
+
+router.post('/actions/play-video', permissionMiddlewareCreator.smartAction(), async (request, response) => {
+  const [selectedCompanyId] = await new RecordsGetter(companies).getIdsFromRequest(request);
+  const selectedCompany = await companies.findByPk(selectedCompanyId);
+  const path = await getVideoURL(selectedCompany);
+  /*   const stat = fs.statSync(path);
+  const fileSize = stat.size;
+  const { range } = request.headers;
+  if (range) {
+    const parts = range.replace(/bytes=/, '').split('-');
+    const start = parseInt(parts[0], 10);
+    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+    const chunksize = (end - start) + 1;
+    const file = fs.createReadStream(path, { start, end });
+    const head = {
+      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+      'Accept-Ranges': 'bytes',
+      'Content-Length': chunksize,
+      'Content-Type': 'video/mp4',
+    };
+    response.writeHead(206, head);
+    file.pipe(response);
+  } else {
+    const head = {
+      'Content-Length': fileSize,
+      'Content-Type': 'video/mp4',
+    };
+    response.writeHead(200, head);
+    fs.createReadStream(path).pipe(response);
+  } */
+  const video = await axios.get(path);
+  request.pipe(video);
+  const head = {
+    'Content-Type': 'video/mp4',
+  };
+  response.writeHead(206, head);
+  video.pipe(response);
 });
 
 module.exports = router;
