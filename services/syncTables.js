@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize('postgres://ziadghalleb@localhost:5436/postgres');
+const sequelize = new Sequelize(process.env.DATABASE_URL);
 
 const Customers = sequelize.import('../models/customers');
 const Passports = sequelize.import('../models/passports');
