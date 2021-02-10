@@ -190,6 +190,21 @@
       "inverseOf": null,
       "validations": []
     }, {
+      "field": "company name",
+      "type": "String",
+      "defaultValue": null,
+      "enums": null,
+      "integration": null,
+      "isFilterable": false,
+      "isPrimaryKey": false,
+      "isReadOnly": true,
+      "isRequired": false,
+      "isSortable": false,
+      "isVirtual": true,
+      "reference": null,
+      "inverseOf": null,
+      "validations": []
+    }, {
       "field": "createdAt",
       "type": "Date",
       "defaultValue": null,
@@ -357,7 +372,57 @@
       "validations": []
     }],
     "segments": [],
-    "actions": []
+    "actions": [{
+      "name": "Cancel rejection",
+      "type": "bulk",
+      "baseUrl": null,
+      "endpoint": "/forest/actions/cancel-rejection",
+      "httpMethod": "POST",
+      "redirect": null,
+      "download": false,
+      "fields": [],
+      "hooks": {
+        "load": false,
+        "change": []
+      }
+    }, {
+      "name": "Reject application",
+      "type": "single",
+      "baseUrl": null,
+      "endpoint": "/forest/actions/reject-application",
+      "httpMethod": "POST",
+      "redirect": null,
+      "download": false,
+      "fields": [{
+        "field": "Reason(s) for rejection",
+        "type": ["Enum"],
+        "defaultValue": null,
+        "enums": [
+          "Certificate of Incorporation",
+          "Proof of Address ID",
+          "Bank Statement ID"
+        ],
+        "isRequired": false,
+        "reference": null,
+        "description": "Please provide a reason for this decision",
+        "position": 0,
+        "widget": null
+      }, {
+        "field": "Comment",
+        "type": ["String"],
+        "defaultValue": null,
+        "enums": null,
+        "isRequired": false,
+        "reference": null,
+        "description": "This comment will only be displayed in your slack workspace message",
+        "position": 1,
+        "widget": "text area"
+      }],
+      "hooks": {
+        "load": true,
+        "change": []
+      }
+    }]
   }, {
     "name": "customers",
     "nameOld": "customers",

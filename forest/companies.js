@@ -1,6 +1,5 @@
 /* eslint-disable max-len */
 const { collection } = require('forest-express-sequelize');
-const { companies } = require('../models/companies');
 
 // This file allows you to add to your Forest UI:
 // - Smart actions: https://docs.forestadmin.com/documentation/reference-guide/actions/create-and-manage-smart-actions
@@ -41,6 +40,10 @@ collection('companies', {
     type: 'bulk',
   },
   ],
-  fields: [],
+  fields: [{
+    field: 'company name',
+    type: 'String',
+    get: (company) => `${company.name}`,
+  }],
   segments: [],
 });
