@@ -13,7 +13,7 @@ collection('companies', {
     type: 'single',
     fields: [
       {
-        field: 'Reason(s) for rejection',
+        field: 'Reason for rejection(s)',
         description: 'Please provide a reason for this decision',
         type: ['Enum'],
         enums: ['Certificate of Incorporation', 'Proof of Address ID', 'Bank Statement ID'],

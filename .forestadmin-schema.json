@@ -394,7 +394,7 @@
       "redirect": null,
       "download": false,
       "fields": [{
-        "field": "Reason(s) for rejection",
+        "field": "Reason for rejection(s)",
         "type": ["Enum"],
         "defaultValue": null,
         "enums": [
